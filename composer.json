@@ -1,0 +1,23 @@
+{
+    "name": "sunkan/imagoopus",
+    "description": "Image manipulation library",
+    "keywords": ["imagick", "resize", "crop"],
+    "homepage": "https://bitbucket.org/sunkan/imagoopus",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andreas Sundqvist",
+            "email": "andreas@forme.se"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "ext-imagick":"*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ImagoOpus\\Tests\\": "tests/src/",
+            "ImagoOpus\\": "src/"
+        }
+    }
+}
