@@ -11,6 +11,16 @@ class Image {
         $this->source = $src;
         $this->imagick = new Imagick($src);
     }
+
+    public function writeImages($path, $ani=-1) {
+        if (!in_array($ani, [true, false])) {
+            $ani = false;
+            if ($this->isAnimated()) {
+                $ani = true;
+            }
+        }
+        return $this->imagick->writeImages($path, $ani);
+    }
     public function getSource() {
         return $this->source;
     }
@@ -29,7 +39,7 @@ class Image {
             return true;
         }
     }
-    public function function getHexColor(\ImagickPixel $pixel) {
+    public function getHexColor(\ImagickPixel $pixel) {
         $color = $pixel->getColor();
 
         return sprintf('#%s%s%s', 
@@ -43,13 +53,12 @@ class Image {
             return $this->imagick->getImageHistogram();
         }
 
-        exec('convert '.$image->get.' -colors '.(int)$count.' -format "%c" histogram:info:', $output);
-
+        exec('convert '.$this->getSource().' -colors '.(int)$count.' -format "%c" histogram:info:', $output);
         $sort = [];
         $data = [];
 
         foreach($output as $i => $row) {
-            $rs = preg_match('/(\d+):\s*\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)\s*(\#[a-f0-9]{6})\s*rgb\(\d{1,3},\d{1,3},\d{1,3}\)/i', $row, $m);
+            $rs = preg_match('/(\d+):\s*\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)\s*(\#[a-f0-9]{6})\s*s?rgb\(\d{1,3},\d{1,3},\d{1,3}\)/i', $row, $m);
             if ($rs) {
                 $sort[$i] = (int)$m[1];
                 $data[$i] = new \ImagickPixel($m[5]);
@@ -68,7 +77,8 @@ class Image {
 
     public function getQuantum() {
         $quantum = $this->imagick->getQuantumRange();
-        return pow(2, $quantum['quantumRangeLong']);
+        //pow(2, )
+        return $quantum['quantumRangeLong'];
     }
     public function getRatio() {
         $dim = $this->imagick->getImageGeometry();
