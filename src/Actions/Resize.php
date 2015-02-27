@@ -14,7 +14,7 @@ class Resize extends AAction {
         $height = $this->options['height'];
 
         if ($width <= $dim['width'] && $height <= $dim['height']){
-            if (isset($this->options['square'])) {
+            if (isset($this->options['square']) || $this->options['type']=='square') {
                 if ($image->isAnimated()){
                     $imagick = $image->coalesceImages();
                     foreach($imagick as $frame){
@@ -24,7 +24,7 @@ class Resize extends AAction {
                 } else {
                     $image->cropThumbnailImage($width?$width:$height,$height?$height:$width);
                 }
-            } elseif ($this->options['force']) {
+            } elseif ($this->options['force'] || $this->options['type']=='force') {
                 $bywidth = (($width/$dim['width']) < ($height/$dim['height'])) ? true : false;
                 if ($this->options['force']=='width'){
                     $height = null;
@@ -46,7 +46,7 @@ class Resize extends AAction {
                 } else {
                     $image->thumbnailImage($width, $height);
                 }
-            } else {
+            } elseif($this->options['width'] || $this->options['height']) {
                 if ($image->isAnimated()){
                     $imagick = $image->coalesceImages();
                     foreach($imagick as $frame){
