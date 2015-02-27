@@ -32,6 +32,10 @@ class Image {
         $this->imagick = $im;
     }
 
+    public function hasAlpha() {
+        $format = $this->imagick->getImageFormat();
+        return in_array($format, ['PNG', 'GIF']);
+    }
 
     public function isAnimated() {
         $format = $this->imagick->getImageFormat();
