@@ -10,8 +10,12 @@ class GravityResize extends AAction {
         $width = $this->options['width'];
         $height = $this->options['height'];
 
+        $image->setIteratorIndex(0);
+
         if ($width || $height) {
-            $image->scaleImage($width?:0, $width?0:$height);
+            do {
+                $image->scaleImage($width?:0, $width?0:$height);
+            } while($image->nextImage());
         }
 
         $imgWidth = $image->getImageWidth();
@@ -56,7 +60,12 @@ class GravityResize extends AAction {
                 //throw something
                 break;
         }
-        $image->cropImage($gWidth, $gHeight, $x, $y);
+        $image->setIteratorIndex(0);
+
+        do {
+            $image->cropImage($gWidth, $gHeight, $x, $y);
+        } while($image->nextImage());
+
         return $image;
     }
 }

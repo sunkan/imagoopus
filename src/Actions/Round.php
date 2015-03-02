@@ -22,7 +22,12 @@ class Round extends AAction {
             $currentFormat = $image->getImageFormat();
             $image->setImageFormat("png");
         }
-        $image->roundCorners($radiusX, $radiusY);
+
+        $image->setIteratorIndex(0);
+        do {
+            $image->roundCorners($radiusX, $radiusY);
+        } while($image->nextImage());
+
         if (!$image->hasAlpha()){
             $image->compositeImage($background, Imagick::COMPOSITE_DSTATOP, 0, 0);
             $image->setImageFormat($currentFormat);

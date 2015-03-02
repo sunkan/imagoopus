@@ -15,7 +15,12 @@ class Trim extends AAction {
         }
         
         $quantum = $image->getQuantum();
-        $image->trimImage($fuzz*$quantum);
+
+        $image->setIteratorIndex(0);
+        do {
+            $image->trimImage($fuzz*$quantum);
+        } while($image->nextImage());
+        
         return $image;
     }
 }

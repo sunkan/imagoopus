@@ -15,17 +15,12 @@ class Crop extends AAction {
             ];
             $this->logger->info(json_encode($log));
         }
+        $image->setIteratorIndex(0);
 
-        if ($image->isAnimated()){
-            $imagickImage = $image->getImagick();
-            $imagickImage = $imagickImage->coalesceImages();
-            foreach($imagickImage as $frame){
-                $frame->cropImage($crop['width'], $crop['height'], $crop['x'], $crop['y']);
-            }
-            $image->setImagick($imagickImage->deconstructImages());
-        } else {
+        do {
             $image->cropImage((int)$crop['width'], (int)$crop['height'], (int)$crop['x'], (int)$crop['y']);
-        }
+        } while($image->nextImage());
+
         return $image;
     }
 }

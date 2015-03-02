@@ -15,8 +15,11 @@ class Transparent extends AAction {
             $target = array_shift($colors);
             $fuzz = 0.08;
         }
-
-        $image->transparentPaintImage($target, 0, $image->getQuantum()*$fuzz, false);
+        $image->setIteratorIndex(0);
+        $fuzz = $image->getQuantum()*$fuzz;
+        do {
+            $image->transparentPaintImage($target, 0, $fuzz, false);
+        } while($image->nextImage());
 
         return $image;
     }
