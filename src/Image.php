@@ -19,6 +19,9 @@ class Image {
                 $ani = true;
             }
         }
+        if ($ani) {
+            $this->imagick->optimizeImageLayers();
+        }
         return $this->imagick->writeImages($path, $ani);
     }
     public function getSource() {
