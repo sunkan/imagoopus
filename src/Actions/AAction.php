@@ -4,7 +4,7 @@ namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-abstract class AAction {
+abstract class AAction implements Serializable {
     protected $options = [];
     protected $debug = false;
     protected $logger = false;
@@ -23,6 +23,14 @@ abstract class AAction {
     public function setLogger($logger) {
         $this->logger = $logger;
     }
+
+    public function serialize() {
+        return serialize($this->options);
+    }
+    public function unserialize($options) {
+        $this->options = unserialize($options);
+    }
+
 
     abstract public function run(Image $image);
 }
