@@ -13,5 +13,7 @@ class Blur extends AEffect {
         do {
             $image->blurImage($radius, 100);
         } while($image->nextImage());
+
+        return $image;
     }
 }

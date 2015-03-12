@@ -12,7 +12,6 @@ class Vignette extends AEffect {
         $x = $this->_fixRange($this->options['x']?:10, 0, 1000);
         $y = $this->_fixRange($this->options['y']?:10, 0, 1000);
 
-
         $image->setIteratorIndex(0);
         do {
             $image->vignetteImage($blur, $sigma, $x, $y);
