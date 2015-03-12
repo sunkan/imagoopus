@@ -1,0 +1,14 @@
+-modulate 120,10,100              => moduleImage(120, 10, 100)
+-fill '#222b6d' -colorize 20      => colorizeImage(#222b6d, 20)
+-gamma 0.5                        => gammaImage(0.5)
+-contrast -contrast               => contrastImage(1)
+-contrast +contrast               => contrastImage(0)
+-define compose:args=100,0        => setOption(compose:args, '100,0')
+-composite test.jpg               => compositeImage
+-compose blend                    => Imagick::COMPOSITE_BLEND
+-compose multiply                 => Imagick::COMPOSITE_MULTIPLY
+-flatten                          => mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN)
+
+\( -clone 0 -fill '#330000' -colorize 100% \) => clone image; image->colorizeImage(#330000, 100)
+\( -clone 0 -colorspace gray -negate \)  => clone image; setImageColorspace(Grayscale);negateImage(0)
+
