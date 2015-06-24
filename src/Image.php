@@ -59,8 +59,13 @@ class Image {
         if (!$count) {
             return $this->imagick->getImageHistogram();
         }
+        $source = $this->getSource();
+        if (strpos($source, '://')) {
+            exec('curl -s "'.$source.'" | convert fd:0 -colors '.(int)$count.' -format "%c" histogram:info:-', $output);
+        } else {
+            exec('convert "'.$source.'" -colors '.(int)$count.' -format "%c" histogram:info:', $output);
+        }
 
-        exec('convert '.$this->getSource().' -colors '.(int)$count.' -format "%c" histogram:info:', $output);
         $sort = [];
         $data = [];
 
@@ -153,7 +158,7 @@ class Image {
         $layer_1 = clone $this->imagick;
         $layer_1->colorizeImage($color, $opacityColor);
 
-        $layer_2 = clone = $this->imagick;
+        $layer_2 = clone $this->imagick;
         $layer_2->setImageColorspace( Imagick::COLORSPACE_GRAY );
         if ($negate) {
             $layer_2->negateImage(0);

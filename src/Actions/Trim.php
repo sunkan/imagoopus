@@ -11,6 +11,12 @@ class Trim extends AAction {
             $target = $image->getImagePixelColor(1, 1);
             if ($target->getColorAsString()!='srgb(255,255,255)' && $target->getColorAsString()!='rgb(255,255,255)') {
                 $fuzz = 0.8;
+                $endTarget = $image->getImagePixelColor(1, $image->getImageHeight()-1);
+                if ($endTarget == $target) {
+                    $fuzz = 0.1;
+                } else {
+                    $fuzz = 0.8;
+                }
             }
         }
         

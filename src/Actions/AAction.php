@@ -3,6 +3,7 @@
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
+use Serializable;
 
 abstract class AAction implements Serializable {
     protected $options = [];
