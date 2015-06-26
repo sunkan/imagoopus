@@ -6,8 +6,10 @@ use ImagoOpus\Image;
 use Imagick;
 use ImagickPixel;
 
-class Round extends AAction {
-    public function run(Image $image) {
+class Round extends AAction
+{
+    public function run(Image $image)
+    {
         $dim = $image->getImageGeometry();
         $radiusX = $radiusY = $this->options['radius'];
         $backgroundColor = $this->options['background']?:'#fff';
@@ -16,7 +18,7 @@ class Round extends AAction {
             $radiusX = $dim['width']*$proc;
             $radiusY = $dim['height']*$proc;
         }
-        if (!$image->hasAlpha()){
+        if (!$image->hasAlpha()) {
             $background = new Imagick();
             $background->newImage($dim['width'], $dim['height'], new ImagickPixel($backgroundColor));
             $currentFormat = $image->getImageFormat();
@@ -26,9 +28,9 @@ class Round extends AAction {
         $image->setIteratorIndex(0);
         do {
             $image->roundCorners($radiusX, $radiusY);
-        } while($image->nextImage());
+        } while ($image->nextImage());
 
-        if (!$image->hasAlpha()){
+        if (!$image->hasAlpha()) {
             $image->compositeImage($background, Imagick::COMPOSITE_DSTATOP, 0, 0);
             $image->setImageFormat($currentFormat);
         }

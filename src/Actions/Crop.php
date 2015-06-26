@@ -4,8 +4,10 @@ namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class Crop extends AAction {
-    public function run(Image $image) {
+class Crop extends AAction
+{
+    public function run(Image $image)
+    {
         $crop = $this->options;
 
         if ($this->debug && $this->logger) {
@@ -19,7 +21,7 @@ class Crop extends AAction {
 
         do {
             $image->cropImage((int)$crop['width'], (int)$crop['height'], (int)$crop['x'], (int)$crop['y']);
-        } while($image->nextImage());
+        } while ($image->nextImage());
 
         return $image;
     }

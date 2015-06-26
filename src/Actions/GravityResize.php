@@ -4,9 +4,10 @@ namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class GravityResize extends AAction {
-
-    public function run(Image $image) {
+class GravityResize extends AAction
+{
+    public function run(Image $image)
+    {
         $width = $this->options['width'];
         $height = $this->options['height'];
 
@@ -15,44 +16,53 @@ class GravityResize extends AAction {
         if ($width || $height) {
             do {
                 $image->scaleImage($width?:0, $width?0:$height);
-            } while($image->nextImage());
+            } while ($image->nextImage());
         }
 
         $imgWidth = $image->getImageWidth();
-        $imgHeight = $image->getImageHeight(); 
+        $imgHeight = $image->getImageHeight();
 
         $gWidth = $this->options['gravity_width']?:$width;
         $gHeight = $this->options['gravity_height']?:$height;
 
         $x = $y = 0;
         switch ($this->options['gravity']) {
-            case 'c'://center
+            case 'c':
+                //center
                 $x = ($imgWidth/2)-($gWidth/2);
                 $y = ($imgHeight/2)-($gHeight/2);
                 break;
-            case 'w'://west
+            case 'w':
+                //west
                 $y = ($imgHeight/2)-($gHeight/2);
                 break;
-            case 'e'://east
+            case 'e':
+                //east
                 $x = $imgWidth-$gWidth;
                 $y = ($imgHeight/2)-($gHeight/2);
                 break;
-            case 'n'://north
+            case 'n':
+                //north
                 $x = ($imgWidth/2)-($gWidth/2);
                 break;
-            case 'nw'://northwest
+            case 'nw':
+                //northwest
                 break;
-            case 'ne'://northeast
+            case 'ne':
+                //northeast
                 $x = $imgWidth-$gWidth;
                 break;
-            case 's'://south
+            case 's':
+                //south
                 $x = ($imgWidth/2)-($gWidth/2);
                 $y = $imgHeight-$gHeight;
                 break;
-            case 'sw'://southwest
+            case 'sw':
+                //southwest
                 $y = $imgHeight-$gHeight;
                 break;
-            case 'se'://southeast
+            case 'se':
+                //southeast
                 $y = $imgHeight-$gHeight;
                 $x = ($imgWidth/2)-$gWidth;
                 break;
@@ -64,7 +74,7 @@ class GravityResize extends AAction {
 
         do {
             $image->cropImage($gWidth, $gHeight, $x, $y);
-        } while($image->nextImage());
+        } while ($image->nextImage());
 
         return $image;
     }

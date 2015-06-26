@@ -4,8 +4,10 @@ namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class Trim extends AAction {
-    public function run(Image $image) {
+class Trim extends AAction
+{
+    public function run(Image $image)
+    {
         $fuzz = $this->options['fuzz']?:0.1;
         if ($fuzz == 0.1) {
             $target = $image->getImagePixelColor(1, 1);
@@ -19,13 +21,13 @@ class Trim extends AAction {
                 }
             }
         }
-        
-        $quantum = $image->getQuantum();
+
+        $fuzz = $fuzz * $image->getQuantum();
 
         $image->setIteratorIndex(0);
         do {
-            $image->trimImage($fuzz*$quantum);
-        } while($image->nextImage());
+            $image->trimImage($fuzz);
+        } while ($image->nextImage());
         
         return $image;
     }

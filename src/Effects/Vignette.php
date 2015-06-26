@@ -5,8 +5,10 @@ namespace ImagoOpus\Effects;
 use ImagoOpus\Image;
 use ImagoOpus\Actions\AEffect;
 
-class Vignette extends AEffect {
-    public function run(Image $image) {
+class Vignette extends AEffect
+{
+    public function run(Image $image)
+    {
         $sigma = 10;
         $blur = $this->_fixRange($this->options['blur']?:10, 0, 255);
         $x = $this->_fixRange($this->options['x']?:10, 0, 1000);
@@ -15,7 +17,7 @@ class Vignette extends AEffect {
         $image->setIteratorIndex(0);
         do {
             $image->vignetteImage($blur, $sigma, $x, $y);
-        } while($image->getNext());
+        } while ($image->getNext());
 
         return $image;
     }

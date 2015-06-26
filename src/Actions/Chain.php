@@ -5,37 +5,45 @@ namespace ImagoOpus\Actions;
 use ImagoOpus\Image;
 use ArrayAccess;
 
-class Crop extends AAction implements ArrayAccess {
+class Chain extends AAction implements ArrayAccess
+{
     protected $chain = [];
 
-    public function offsetExists( $offset ) {
+    public function offsetExists($offset)
+    {
         return isset($this->chain[$offset]);
     }
-    public function offsetGet ( $offset ) {
+    public function offsetGet($offset)
+    {
         return isset($this->chain[$offset]) ? $this->chain[$offset] : null;
     }
-    public function offsetSet ( $offset , $value ) {
+    public function offsetSet($offset, $value)
+    {
         if (is_null($offset)) {
             $this->chain[] = $value;
         } else {
             $this->chain[$offset] = $value;
         }
     }
-    public function offsetUnset ( $offset ) {
+    public function offsetUnset($offset)
+    {
         unset($this->chain[$offset]);
     }
 
-    public function serialize() {
+    public function serialize()
+    {
         if (!count($this->chain)) {
             return serialize([]);
         }
         return serialize($this->chain);
     }
-    public function unserialize($options) {
+    public function unserialize($options)
+    {
         $this->chain = unserialize($options);
     }
 
-    public function run(Image $image) {
+    public function run(Image $image)
+    {
         if (!count($this->chain)) {
             return $image;
         }

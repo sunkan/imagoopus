@@ -5,10 +5,12 @@ namespace ImagoOpus\Actions;
 use ImagoOpus\Image;
 use ImagickPixel;
 
-class Matrix extends AAction {
-    public function run(Image $image) {
+class Matrix extends AAction
+{
+    public function run(Image $image)
+    {
         $matrix = $this->options['matrix'];
-        if (!$image->hasAlpha()){
+        if (!$image->hasAlpha()) {
             $backgroundColor = $this->options['background']?:'#fff';
             $dim = $image->getImageGeometry();
             $background = new Imagick();
@@ -32,9 +34,9 @@ class Matrix extends AAction {
         $tPixel = new ImagickPixel('transparent');
         do {
             $image->rotateimage($tPixel, $angle);
-        } while($image->nextImage());
+        } while ($image->nextImage());
 
-        if (!$image->hasAlpha()){
+        if (!$image->hasAlpha()) {
             $image->compositeImage($background, Imagick::COMPOSITE_DSTATOP, 0, 0);
             $image->setImageFormat($currentFormat);
         }

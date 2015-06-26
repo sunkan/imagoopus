@@ -16,13 +16,15 @@ use ImagickPixel;
     $this->output();
 */
 
-class Lomo extends ModulateImage {
-    public function run(Image $image) {
+class Lomo extends ModulateImage
+{
+    public function run(Image $image)
+    {
         $image->colortone('#330000', 100, 0);
 
         $image = $this->modulateImage($image, 150, 80, 100);
 
-        $image->gammaImage(1.2)
+        $image->gammaImage(1.2);
 
         $image->contrastImage(1);
         $image->contrastImage(1);
@@ -33,5 +35,3 @@ class Lomo extends ModulateImage {
         return $image;
     }
 }
-
-
