@@ -17,7 +17,7 @@ class Resize extends AAction
 
         if ($width <= $dim['width'] && $height <= $dim['height']) {
             $image->setIteratorIndex(0);
-            if (isset($this->options['square']) || $this->options['type']=='square') {
+            if (isset($this->options['square']) || $this->options['type'] == 'square') {
                 do {
                     $image->cropThumbnailImage($width?$width:$height, $height?$height:$width);
                 } while ($image->nextImage());
