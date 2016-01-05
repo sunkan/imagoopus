@@ -102,8 +102,7 @@ class Image
         $data = [];
 
         foreach ($output as $i => $row) {
-            $reg = '/(\d+):\s*\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)\s*'
-                 + '(\#[a-f0-9]{6})\s*s?rgb\(\d{1,3},\d{1,3},\d{1,3}\)/i';
+            $reg = '/(\d+):\s*\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)\s*(\#[a-f0-9]{6})\s*s?rgb\(\d{1,3},\d{1,3},\d{1,3}\)/i';
             $rs = preg_match($reg, $row, $m);
             if ($rs) {
                 $sort[$i] = (int)$m[1];
