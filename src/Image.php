@@ -91,11 +91,11 @@ class Image
         if (!$count) {
             return $this->imagick->getImageHistogram();
         }
-        $source = $this->getSource();
+        $source = escapeshellarg($this->getSource());
         if (strpos($source, '://')) {
-            exec('curl -s "'.$source.'" | convert fd:0 -colors '.(int)$count.' -format "%c" histogram:info:-', $output);
+            exec('curl -s ' . $source . ' | convert fd:0 -colors '.(int)$count.' -format "%c" histogram:info:-', $output);
         } else {
-            exec('convert "'.$source.'" -colors '.(int)$count.' -format "%c" histogram:info:', $output);
+            exec('convert ' . $source . ' -colors '.(int)$count.' -format "%c" histogram:info:', $output);
         }
 
         $sort = [];
