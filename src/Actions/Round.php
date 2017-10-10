@@ -13,15 +13,14 @@ class Round extends AAction
         $dim = $image->getImageGeometry();
         $radiusX = $radiusY = $this->options['radius'];
         $backgroundColor = $this->options['background']?:'#fff';
-        if (strpos($radius, '%')) {
-            $proc = (int)$radius/100;
-            $radiusX = $dim['width']*$proc;
-            $radiusY = $dim['height']*$proc;
+        if (strpos($radiusX, '%')) {
+            $percent = (int) $radiusX / 100;
+            $radiusX = $dim['width'] * $percent;
+            $radiusY = $dim['height'] * $percent;
         }
+
+        $currentFormat = $image->getImageFormat();
         if (!$image->hasAlpha()) {
-            $background = new Imagick();
-            $background->newImage($dim['width'], $dim['height'], new ImagickPixel($backgroundColor));
-            $currentFormat = $image->getImageFormat();
             $image->setImageFormat("png");
         }
 
@@ -31,6 +30,8 @@ class Round extends AAction
         } while ($image->nextImage());
 
         if (!$image->hasAlpha()) {
+            $background = new Imagick();
+            $background->newImage($dim['width'], $dim['height'], new ImagickPixel($backgroundColor));
             $image->compositeImage($background, Imagick::COMPOSITE_DSTATOP, 0, 0);
             $image->setImageFormat($currentFormat);
         }

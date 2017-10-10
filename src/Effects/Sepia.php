@@ -13,7 +13,7 @@ class Sepia extends AEffect
         $image->setIteratorIndex(0);
         do {
             $image->sepiaToneImage($sepia);
-        } while ($image->getNext());
+        } while ($image->nextImage());
 
         return $image;
     }

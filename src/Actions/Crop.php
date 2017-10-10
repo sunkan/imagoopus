@@ -12,15 +12,15 @@ class Crop extends AAction
 
         if ($this->debug && $this->logger) {
             $log = [
-                'type'=>'crop image',
-                'data'=>$crop
+                'type' => 'crop image',
+                'data' => $crop
             ];
             $this->logger->info(json_encode($log));
         }
         $image->setIteratorIndex(0);
 
         do {
-            $image->cropImage((int)$crop['width'], (int)$crop['height'], (int)$crop['x'], (int)$crop['y']);
+            $image->cropImage((int) $crop['width'], (int) $crop['height'], (int) $crop['x'], (int) $crop['y']);
         } while ($image->nextImage());
 
         return $image;

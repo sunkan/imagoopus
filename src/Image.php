@@ -8,8 +8,33 @@
 
 namespace ImagoOpus;
 
+use BadMethodCallException;
 use Imagick;
+use ImagickPixel;
 
+/**
+ * Class Image
+ * @method bool setIteratorIndex(int $index)
+ * @method bool transparentPaintImage(mixed $target, float $alpha, float $fuzz, bool $invert)
+ * @method bool nextImage()
+ * @method bool setImageFormat(string $format)
+ * @method ImagickPixel getImagePixelColor(int $x, int $y)
+ * @method int getImageWidth()
+ * @method int getImageHeight()
+ * @method array getImageGeometry()
+ * @method bool thumbnailImage(int $columns, int $rows, bool $bestfit = false, bool $fill = false)
+ * @method bool cropImage(int $width ,int $height, int $x, int $y)
+ * @method bool scaleImage(int $cols, int $rows, bool $bestfit = false)
+ * @method string getImageFormat()
+ * @method bool flipImage()
+ * @method bool rotateImage(mixed $background, float $degrees)
+ * @method bool compositeImage(Imagick $composite_object, int $composite, int $x, int $y, int $channel = Imagick::CHANNEL_ALL)
+ * @method bool cropThumbnailImage( int $width, int $height)
+ * @method int getImageOrientation()
+ * @method bool setImageOrientation(int $orientation)
+ * @method bool roundCorners(float $x_rounding, float $y_rounding, float $stroke_width = 10, float $displace = 5, float $size_correction = -6)
+ * @method bool trimImage(float $fuzz)
+ */
 class Image
 {
     protected static $channels = [
@@ -170,11 +195,11 @@ class Image
 
     public function levels($black, $gamma, $white)
     {
-        $quantumRangeLong = $image->getQuantum();
+        $quantumRangeLong = $this->getQuantum();
         $this->imagick->levelImage(
-            $black*$quantumRangeLong/255,
+            $black * $quantumRangeLong / 255,
             $gamma,
-            $white*$quantumRangeLong/255,
+            $white * $quantumRangeLong / 255,
             Imagick::CHANNEL_ALL
         );
         return $this;
@@ -183,7 +208,7 @@ class Image
     public function colortone($color, $level, $type = 0)
     {
         $this->imagick->setImageColorspace(Imagick::COLORSPACE_RGB);
-        $args = [$level, 100-$level];
+        $args = [$level, 100 - $level];
         $negate = $type == 0 ? true : false;
 
         $opacityColor = new ImagickPixel("rgba(0, 0, 0, 100)");
@@ -202,19 +227,26 @@ class Image
         $this->imagick->compositeImage($layer_2, Imagick::COMPOSITE_BLEND, 0, 0);
     }
 
-    public function customVignette($color_1 = 'none', $color_2 = 'black', $crop_factor = 1.5)
+    /**
+     * @param string $color1
+     * @param string $color2
+     * @param float $cropFactor
+     * @return self
+     * @throws \ImagickException
+     */
+    public function customVignette($color1 = 'none', $color2 = 'black', $cropFactor = 1.5)
     {
         $dim = $this->imagick->getImageGeometry();
-        $crop_x = floor($dim['width'] * $crop_factor);
-        $crop_y = floor($dim['height'] * $crop_factor);
+        $crop_x = floor($dim['width'] * $cropFactor);
+        $crop_y = floor($dim['height'] * $cropFactor);
         
         $layer = new Imagick();
-        $layer->newPseudoImage($crop_x, $crop_y, 'radial-gradient:'.$color_1.'-'.$color_2);
+        $layer->newPseudoImage($crop_x, $crop_y, 'radial-gradient:' . $color1 . '-' . $color2);
 
         $layer->cropThumbnailImage($dim['width'], $dim['height']);
         $layer->setImagePage($dim['width'], $dim['height'], 0, 0);
 
-        $this->imagick->compositeImage($layer_1, Imagick::COMPOSITE_MULTIPLY, 0, 0);
+        $this->imagick->compositeImage($layer, Imagick::COMPOSITE_MULTIPLY, 0, 0);
         $this->imagick->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
 
         return $this;

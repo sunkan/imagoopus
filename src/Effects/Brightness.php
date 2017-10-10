@@ -1,14 +1,14 @@
 <?php
 
-namespace ImagoOpus\Efftects;
+namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Brightness extends ModuleateImage
+class Brightness extends ModulateImage
 {
     public function run(Image $image)
     {
-        $brightness = $this->options['brightness']?:80;
+        $brightness = $this->options['brightness'] ?: 80;
 
         $image = $this->modulateImage(0, 0, $brightness);
         return $image;

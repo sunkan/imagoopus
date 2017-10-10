@@ -1,10 +1,10 @@
 <?php
 
-namespace ImagoOpus\Efftects;
+namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Grayscale extends ModuleateImage
+class Grayscale extends ModulateImage
 {
     public function run(Image $image)
     {

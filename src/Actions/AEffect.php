@@ -2,8 +2,6 @@
 
 namespace ImagoOpus\Actions;
 
-use ImagoOpus\Image;
-
 abstract class AEffect extends AAction
 {
     protected function _fixRange($value, $min, $max)

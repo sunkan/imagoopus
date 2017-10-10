@@ -9,7 +9,7 @@ class Blur extends AEffect
 {
     public function run(Image $image)
     {
-        $radius = $this->_fixRange($this->options['radius'], 0, 100)/10;
+        $radius = $this->_fixRange($this->options['radius'], 0, 100) / 10;
         
         $image->setIteratorIndex(0);
         do {

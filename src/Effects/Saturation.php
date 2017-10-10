@@ -1,14 +1,14 @@
 <?php
 
-namespace ImagoOpus\Efftects;
+namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Saturation extends ModuleateImage
+class Saturation extends ModulateImage
 {
     public function run(Image $image)
     {
-        $saturation = $this->options['saturation']?:80;
+        $saturation = $this->options['saturation'] ?: 80;
 
         $image = $this->modulateImage(0, $saturation, 0);
 

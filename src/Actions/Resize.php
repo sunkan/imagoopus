@@ -17,18 +17,18 @@ class Resize extends AAction
 
         if ($width <= $dim['width'] && $height <= $dim['height']) {
             $image->setIteratorIndex(0);
-            if (isset($this->options['square']) || $this->options['type'] == 'square') {
+            if (isset($this->options['square']) || $this->options['type'] === 'square') {
                 do {
-                    $image->cropThumbnailImage($width?$width:$height, $height?$height:$width);
+                    $image->cropThumbnailImage($width ? $width : $height, $height ? $height : $width);
                 } while ($image->nextImage());
-            } elseif ($this->options['force'] || $this->options['type']=='force') {
-                $bywidth = (($width/$dim['width']) < ($height/$dim['height'])) ? true : false;
-                if ($this->options['force']=='width') {
+            } elseif ($this->options['force'] || $this->options['type'] === 'force') {
+                $byWidth = (($width / $dim['width']) < ($height / $dim['height'])) ? true : false;
+                if ($this->options['force'] === 'width') {
                     $height = null;
-                } elseif ($this->options['force']=='height') {
+                } elseif ($this->options['force'] === 'height') {
                     $width = null;
                 } else {
-                    if ($bywidth) {
+                    if ($byWidth) {
                         $height = null;
                     } else {
                         $width = null;

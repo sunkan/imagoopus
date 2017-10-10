@@ -18,7 +18,7 @@ class Contrast extends AEffect
             } while ($image->nextImage());
         } else {
             do {
-                $image->sigmoidalContrastImage($contrast>0?true:false, abs($contrast), 0.5);
+                $image->sigmoidalContrastImage($contrast > 0 ? true : false, abs($contrast), 0.5);
             } while ($image->nextImage());
         }
 

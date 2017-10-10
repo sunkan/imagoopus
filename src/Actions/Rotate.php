@@ -38,12 +38,8 @@ class Rotate extends AAction
         }
         $angle = $this->options['angle'];
 
+        $currentFormat = $image->getImageFormat();
         if (!$image->hasAlpha()) {
-            $backgroundColor = $this->options['background']?:'#fff';
-            $dim = $image->getImageGeometry();
-            $background = new Imagick();
-            $background->newImage($dim['width'], $dim['height'], new ImagickPixel($backgroundColor));
-            $currentFormat = $image->getImageFormat();
             $image->setImageFormat("png");
         }
         $image->setIteratorIndex(0);
@@ -53,6 +49,10 @@ class Rotate extends AAction
         } while ($image->nextImage());
         
         if (!$image->hasAlpha()) {
+            $backgroundColor = $this->options['background']?:'#fff';
+            $dim = $image->getImageGeometry();
+            $background = new Imagick();
+            $background->newImage($dim['width'], $dim['height'], new ImagickPixel($backgroundColor));
             $image->compositeImage($background, Imagick::COMPOSITE_DSTATOP, 0, 0);
             $image->setImageFormat($currentFormat);
         }

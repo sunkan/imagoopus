@@ -13,10 +13,12 @@ class Chain extends AAction implements ArrayAccess
     {
         return isset($this->chain[$offset]);
     }
+
     public function offsetGet($offset)
     {
         return isset($this->chain[$offset]) ? $this->chain[$offset] : null;
     }
+
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
@@ -25,6 +27,7 @@ class Chain extends AAction implements ArrayAccess
             $this->chain[$offset] = $value;
         }
     }
+
     public function offsetUnset($offset)
     {
         unset($this->chain[$offset]);
@@ -37,6 +40,7 @@ class Chain extends AAction implements ArrayAccess
         }
         return serialize($this->chain);
     }
+
     public function unserialize($options)
     {
         $this->chain = unserialize($options);
