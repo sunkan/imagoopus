@@ -46,6 +46,21 @@ class Image
 {
     protected Imagick $imagick;
 
+    /**
+     * @param resource $resource
+     */
+    public static function fromResource($resource): self
+    {
+        $imagick = new Imagick();
+        $imagick->readImageFile($resource);
+        return new self($imagick);
+    }
+
+    public static function fromPath(string $path): self
+    {
+        return new self(new Imagick($path));
+    }
+
     public function __construct(Imagick $imagick)
     {
         $this->imagick = $imagick;
