@@ -146,6 +146,14 @@ class Image
         return $dim['width'] / $dim['height'];
     }
 
+    /**
+     * Returns images file size
+     */
+    public function getSize(): int
+    {
+        return $this->imagick->getImageLength();
+    }
+
     public function preform(Actions\ActionInterface $action): Image
     {
         return $action->run($this);

@@ -48,8 +48,10 @@ class Resize implements ActionInterface
                     $image->cropThumbnailImage($width ? $width : $height, $height ? $height : $width);
                 }
                 while ($image->nextImage());
+
+                return $image;
             }
-            elseif ($this->type === self::TYPE_FORCE) {
+            if ($this->type === self::TYPE_FORCE) {
                 $byWidth = ($width / $dim['width']) < ($height / $dim['height']);
                 if ($this->forceType === self::FORCE_TYPE_WIDTH) {
                     $height = 0;
@@ -69,13 +71,13 @@ class Resize implements ActionInterface
                     $image->thumbnailImage($width, $height);
                 }
                 while ($image->nextImage());
+                return $image;
             }
-            elseif ($width || $height) {
-                do {
-                    $image->scaleImage($width, $height);
-                }
-                while ($image->nextImage());
+
+            do {
+                $image->scaleImage($width, $height);
             }
+            while ($image->nextImage());
         }
         return $image;
     }
