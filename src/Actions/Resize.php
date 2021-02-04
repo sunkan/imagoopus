@@ -1,46 +1,80 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class Resize extends AAction
+class Resize implements ActionInterface
 {
-    public function run(Image $image)
+    public const FORCE_TYPE_WIDTH = 'width';
+    public const FORCE_TYPE_HEIGHT = 'height';
+
+    public const TYPE_SQUARE = 'square';
+    public const TYPE_FORCE = 'force';
+    public const TYPE_NONE = '';
+
+    private const ALLOWED_TYPES = [
+        self::TYPE_SQUARE,
+        self::TYPE_FORCE,
+        self::TYPE_NONE,
+    ];
+
+    private int $width;
+    private int $height;
+    private string $type;
+    private ?string $forceType;
+
+    public function __construct(int $width, int $height, string $type = self::TYPE_NONE, string $forceType = null)
     {
-        if ($this->debug && $this->logger) {
-            $this->logger->info('resize image (best fit): '. 'width:'.$this->options['width'].':height:'.$this->options['height']);
+        if (!in_array($type, self::ALLOWED_TYPES, true)) {
+            throw new \InvalidArgumentException('Invalid resize type');
         }
+        $this->width = $width;
+        $this->height = $height;
+        $this->type = $type;
+        $this->forceType = $forceType;
+    }
+
+    public function run(Image $image): Image
+    {
         $dim = $image->getImageGeometry();
-        $width = $this->options['width'];
-        $height = $this->options['height'];
+        $width = $this->width;
+        $height = $this->height;
 
         if ($width <= $dim['width'] && $height <= $dim['height']) {
             $image->setIteratorIndex(0);
-            if (isset($this->options['square']) || $this->options['type'] === 'square') {
+            if ($this->type === self::TYPE_SQUARE) {
                 do {
                     $image->cropThumbnailImage($width ? $width : $height, $height ? $height : $width);
-                } while ($image->nextImage());
-            } elseif ($this->options['force'] || $this->options['type'] === 'force') {
-                $byWidth = (($width / $dim['width']) < ($height / $dim['height'])) ? true : false;
-                if ($this->options['force'] === 'width') {
-                    $height = null;
-                } elseif ($this->options['force'] === 'height') {
-                    $width = null;
-                } else {
+                }
+                while ($image->nextImage());
+            }
+            elseif ($this->type === self::TYPE_FORCE) {
+                $byWidth = ($width / $dim['width']) < ($height / $dim['height']);
+                if ($this->forceType === self::FORCE_TYPE_WIDTH) {
+                    $height = 0;
+                }
+                elseif ($this->forceType === self::FORCE_TYPE_HEIGHT) {
+                    $width = 0;
+                }
+                else {
                     if ($byWidth) {
-                        $height = null;
-                    } else {
-                        $width = null;
+                        $height = 0;
+                    }
+                    else {
+                        $width = 0;
                     }
                 }
                 do {
                     $image->thumbnailImage($width, $height);
-                } while ($image->nextImage());
-            } elseif ($this->options['width'] || $this->options['height']) {
+                }
+                while ($image->nextImage());
+            }
+            elseif ($width || $height) {
                 do {
-                    $image->scaleImage($this->options['width'], $this->options['height']);
-                } while ($image->nextImage());
+                    $image->scaleImage($width, $height);
+                }
+                while ($image->nextImage());
             }
         }
         return $image;

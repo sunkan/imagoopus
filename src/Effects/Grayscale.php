@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Grayscale extends ModulateImage
+class Grayscale implements EffectInterface
 {
-    public function run(Image $image)
-    {
-        $image = $this->modulateImage(0, -100, 0);
+    use ModulateImageTrait;
 
-        return $image;
+    public function run(Image $image): Image
+    {
+        return $this->modulateImage($image, 100);
     }
 }

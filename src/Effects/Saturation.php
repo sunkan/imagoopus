@@ -1,17 +1,22 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Saturation extends ModulateImage
+class Saturation implements EffectInterface
 {
-    public function run(Image $image)
+    use ModulateImageTrait;
+
+    private int $saturation;
+
+    public function __construct(int $saturation = 80)
     {
-        $saturation = $this->options['saturation'] ?: 80;
+        $this->saturation = $saturation;
+    }
 
-        $image = $this->modulateImage(0, $saturation, 0);
-
-        return $image;
+    public function run(Image $image): Image
+    {
+        return $this->modulateImage($image, 0, $this->saturation);
     }
 }

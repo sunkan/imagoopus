@@ -1,26 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
-use ImagickPixel;
 
-/*
-    $this->tempfile();
-     
-    $command = "convert {$this->_tmp} -channel R -level 33% -channel G -level 33% $this->_tmp";
-     
-    $this->execute($command);
-    $this->vignette($this->_tmp);
-     
-    $this->output();
-*/
-
-class Lomo extends ModulateImage
+class Lomo implements EffectInterface
 {
-    public function run(Image $image)
+    use ModulateImageTrait;
+
+    public function run(Image $image): Image
     {
-        $image->colortone('#330000', 100, 0);
+        $image->colortone('#330000', 100, false);
 
         $image = $this->modulateImage($image, 150, 80, 100);
 

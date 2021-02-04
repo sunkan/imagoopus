@@ -1,24 +1,33 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
-use ImagoOpus\Actions\AEffect;
 
-class Pixelate extends AEffect
+class Pixelate implements EffectInterface
 {
-    public function run(Image $image)
+    use FixRangeTrait;
+
+    private float $size;
+
+    public function __construct(float $size = 10)
     {
-        $pixelSize = $this->_fixRange($this->options['size'] ?: 10, 3, 100);
+        $this->size = $size;
+    }
+
+    public function run(Image $image): Image
+    {
+        $pixelSize = $this->fixRange($this->size, 3, 100);
         $dim = $image->getImageGeometry();
-        $tmpWidth = $dim['width']/$pixelSize;
-        $tmpHeight = $dim['height']/$pixelSize;
+        $tmpWidth = $dim['width'] / $pixelSize;
+        $tmpHeight = $dim['height'] / $pixelSize;
 
         $image->setIteratorIndex(0);
         do {
-            $image->scaleImage($tmpWidth, $tmpHeight);
+            $image->scaleImage((int)$tmpWidth, (int)$tmpHeight);
             $image->scaleImage($dim['width'], $dim['height']);
-        } while ($image->nextImage());
+        }
+        while ($image->nextImage());
 
         return $image;
     }

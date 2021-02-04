@@ -1,13 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 use ImagickPixel;
 
-class Gotham extends ModulateImage
+class Gotham implements EffectInterface
 {
-    public function run(Image $image)
+    use ModulateImageTrait;
+
+    public function run(Image $image): Image
     {
         $image = $this->modulateImage($image, 120, 10, 100);
 

@@ -1,16 +1,22 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
 
-class Hue extends ModulateImage
+class Hue implements EffectInterface
 {
-    public function run(Image $image)
-    {
-        $hue = $this->options['hue'] ?: 80;
+    use ModulateImageTrait;
 
-        $image = $this->modulateImage($hue, 0, 0);
-        return $image;
+    private float $hue;
+
+    public function __construct(float $hue = 80)
+    {
+        $this->hue = $hue;
+    }
+
+    public function run(Image $image): Image
+    {
+        return $this->modulateImage($image, 0, 0, $this->hue);
     }
 }

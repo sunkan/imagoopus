@@ -1,24 +1,24 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
+use Imagick;
 use ImagoOpus\Image;
-use ImagoOpus\Actions\AEffect;
 
-class Nashville extends AEffect
+class Nashville implements EffectInterface
 {
-    public function run(Image $image)
+    public function run(Image $image): Image
     {
-        $image->baseCurve('green', 36, true)
-              ->baseCurve('blue', 122, true);
+        $image->baseCurve(Imagick::CHANNEL_GREEN, 36, true)
+              ->baseCurve(Imagick::CHANNEL_BLUE, 122, true);
 
         $image->levels(0, 1.46, 240);
         // TODO: Add 10,45 brightness & contrast
-        $image->baseCurve('green', 16)
-              ->baseCurve('blue', 77);
+        $image->baseCurve(Imagick::CHANNEL_GREEN, 16)
+              ->baseCurve(Imagick::CHANNEL_BLUE, 77);
         // TODO: Add -6,16 brightness & contrast
-        $image->baseCurve('blue', 16);
-        $image->compositeColor('#f6d8ac', 'multiply');
+        $image->baseCurve(Imagick::CHANNEL_BLUE, 16);
+        $image->compositeColor('#f6d8ac', Imagick::COMPOSITE_MULTIPLY);
 
         return $image;
     }

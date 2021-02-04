@@ -1,19 +1,28 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
-use ImagoOpus\Actions\AEffect;
 
-class Sepia extends AEffect
+class Sepia implements EffectInterface
 {
-    public function run(Image $image)
+    use FixRangeTrait;
+
+    private float $threshold;
+
+    public function __construct(float $threshold = 80)
     {
-        $sepia = $this->_fixRange($this->options['sepia']?:80, 0, $image->getQuantum());
+        $this->threshold = $threshold;
+    }
+
+    public function run(Image $image): Image
+    {
+        $sepia = $this->fixRange($this->threshold, 0, $image->getQuantum());
         $image->setIteratorIndex(0);
         do {
             $image->sepiaToneImage($sepia);
-        } while ($image->nextImage());
+        }
+        while ($image->nextImage());
 
         return $image;
     }

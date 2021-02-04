@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": "^7.4 || ^8.0",
         "ext-imagick":"*"
     },
     "autoload": {
@@ -19,5 +19,8 @@
             "ImagoOpus\\Tests\\": "tests/src/",
             "ImagoOpus\\": "src/"
         }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.71"
     }
 }

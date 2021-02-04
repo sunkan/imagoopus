@@ -1,33 +1,26 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 use ImagickPixel;
 
-class Transparent extends AAction
+/**
+ * Action to make background transparent
+ */
+class Transparent implements ActionInterface
 {
-    private function _do(Image $image, ImagickPixel $target, $fuzz)
-    {
-        $image->setIteratorIndex(0);
-        $fuzz = $image->getQuantum()*$fuzz;
-        do {
-            $image->transparentPaintImage($target, 0, $fuzz, false);
-        } while ($image->nextImage());
-
-        return $image;
-    }
-
-    public function run(Image $image)
+    public function run(Image $image): Image
     {
         $image->setImageFormat('png');
         $target = $image->getImagePixelColor(1, 1);
         $fuzz = 0.01;
-        if ($image->getHexColor($target)!='#ffffff') {
+        if ($image->getHexColor($target) != '#ffffff') {
             $hsl = $target->getHSL();
             if ($hsl['saturation'] > 0.4 && $hsl['luminosity'] < 80) {
                 return $image;
-            } else {
+            }
+            else {
                 $colors = $image->getImageHistogram(1);
                 /** @var ImagickPixel $color */
                 $color = $colors[0];
@@ -40,8 +33,9 @@ class Transparent extends AAction
             $height = $image->getImageHeight();
             $endTarget = $image->getImagePixelColor($width - 1, $height - 1);
             if ($endTarget->getColorAsString() == $target->getColorAsString()) {
-                return $this->_do($image, $target, $fuzz);
-            } else {
+                return $this->makeTransparent($image, $target, $fuzz);
+            }
+            else {
                 $corners = [
                     $target,
                     $image->getImagePixelColor($width - 1, 1),
@@ -53,21 +47,32 @@ class Transparent extends AAction
                     foreach ($corners as $color2) {
                         $compHsl = $color2->getHSL();
                         $diff = $baseHsl['luminosity'] - $compHsl['luminosity'];
-                        if ($diff >0.5 || $diff < -0.5) {
+                        if ($diff > 0.5 || $diff < -0.5) {
                             return $image;
                         }
                     }
                 }
                 $fuzz = 0.03;
                 foreach ($corners as $color) {
-                    $image = $this->_do($image, $color, $fuzz);
+                    $image = $this->makeTransparent($image, $color, $fuzz);
                 }
 
                 return $image;
             }
-
         }
 
-        return $this->_do($image, $target, $fuzz);
+        return $this->makeTransparent($image, $target, $fuzz);
+    }
+
+    private function makeTransparent(Image $image, ImagickPixel $target, float $fuzz): Image
+    {
+        $image->setIteratorIndex(0);
+        $fuzz = $image->getQuantum() * $fuzz;
+        do {
+            $image->transparentPaintImage($target, 0, $fuzz, false);
+        }
+        while ($image->nextImage());
+
+        return $image;
     }
 }

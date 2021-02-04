@@ -1,27 +1,32 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class Crop extends AAction
+class Crop implements ActionInterface
 {
-    public function run(Image $image)
-    {
-        $crop = $this->options;
+    private int $width;
+    private int $height;
+    private int $x;
+    private int $y;
 
-        if ($this->debug && $this->logger) {
-            $log = [
-                'type' => 'crop image',
-                'data' => $crop
-            ];
-            $this->logger->info(json_encode($log));
-        }
+    public function __construct(int $width, int $height, int $x, int $y)
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->x = $x;
+        $this->y = $y;
+    }
+
+    public function run(Image $image): Image
+    {
         $image->setIteratorIndex(0);
 
         do {
-            $image->cropImage((int) $crop['width'], (int) $crop['height'], (int) $crop['x'], (int) $crop['y']);
-        } while ($image->nextImage());
+            $image->cropImage($this->width, $this->height, $this->x, $this->y);
+        }
+        while ($image->nextImage());
 
         return $image;
     }

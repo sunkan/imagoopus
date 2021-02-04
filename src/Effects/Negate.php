@@ -1,18 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
-use ImagoOpus\Actions\AEffect;
 
-class Negate extends AEffect
+class Negate implements EffectInterface
 {
-    public function run(Image $image)
+    public function run(Image $image): Image
     {
         $image->setIteratorIndex(0);
         do {
             $image->negateImage(false);
-        } while ($image->nextImage());
+        }
+        while ($image->nextImage());
 
         return $image;
     }

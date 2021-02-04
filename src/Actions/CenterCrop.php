@@ -1,45 +1,56 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 
-class CenterCrop extends AAction
+/**
+ * Action to crop image from center of image
+ */
+class CenterCrop implements ActionInterface
 {
-    public function run(Image $image)
+    private int $baseWidth;
+
+    public function __construct(int $width = 480)
     {
-        if ($this->debug && $this->logger) {
-            $this->logger->log('info', 'center_crop', $this->options);
-        }
+        $this->baseWidth = $width;
+    }
+
+    public function run(Image $image): Image
+    {
         $dim = $image->getImageGeometry();
         $ratio = $image->getRatio();
-        $baseWidth = $this->options['base_width'] ?: 480;
         $image->setIteratorIndex(0);
         if ($ratio > 1 && $ratio > 0.5) {
             if ($dim['width'] > 900) {
                 do {
-                    $image->thumbnailImage(900, null);
-                } while ($image->nextImage());
+                    $image->thumbnailImage(900, 0);
+                }
+                while ($image->nextImage());
                 $image->setIteratorIndex(0);
 
                 $dim = $image->getImageGeometry();
             }
-            $y = ceil($dim['width'] / 2) - floor($baseWidth/2);
+            $y = (int)(ceil($dim['width'] / 2) - floor($this->baseWidth / 2));
             do {
-                $image->cropImage($baseWidth, $dim['height'], $y, 0);
-            } while ($image->nextImage());
-        } else {
+                $image->cropImage($this->baseWidth, $dim['height'], $y, 0);
+            }
+            while ($image->nextImage());
+        }
+        else {
             do {
-                $image->thumbnailImage($baseWidth, null);
-            } while ($image->nextImage());
+                $image->thumbnailImage($this->baseWidth, 0);
+            }
+            while ($image->nextImage());
 
             $dim = $image->getImageGeometry();
 
             if ($ratio <= 0.5 && $dim['height'] > 1000) {
                 $image->setIteratorIndex(0);
                 do {
-                    $image->cropImage($baseWidth, 950, 0, 0);
-                } while ($image->nextImage());
+                    $image->cropImage($this->baseWidth, 950, 0, 0);
+                }
+                while ($image->nextImage());
             }
         }
         return $image;

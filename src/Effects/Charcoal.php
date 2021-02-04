@@ -1,19 +1,28 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Effects;
 
 use ImagoOpus\Image;
-use ImagoOpus\Actions\AEffect;
 
-class Charcoal extends AEffect
+class Charcoal implements EffectInterface
 {
-    public function run(Image $image)
+    use FixRangeTrait;
+
+    private float $radius;
+
+    public function __construct(float $radius = 2)
     {
-        $radius = $this->_fixRange($this->options['radius'] ?: 2, 0, 10);
+        $this->radius = $radius;
+    }
+
+    public function run(Image $image): Image
+    {
+        $radius = $this->fixRange($this->radius, 0, 10);
         $image->setIteratorIndex(0);
         do {
             $image->charcoalImage($radius, 2);
-        } while ($image->nextImage());
+        }
+        while ($image->nextImage());
 
         return $image;
     }

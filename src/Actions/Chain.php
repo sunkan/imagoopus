@@ -1,15 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ImagoOpus\Actions;
 
 use ImagoOpus\Image;
 use ArrayAccess;
 
-class Chain extends AAction implements ArrayAccess
+/**
+ * @implements ArrayAccess<int, ActionInterface>
+ */
+class Chain implements ArrayAccess, ActionInterface
 {
-    protected $chain = [];
+    /** @var ActionInterface[] */
+    protected array $chain = [];
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->chain[$offset]);
     }
@@ -21,9 +25,13 @@ class Chain extends AAction implements ArrayAccess
 
     public function offsetSet($offset, $value)
     {
+        if (!$value instanceof ActionInterface) {
+            throw new \InvalidArgumentException('Invalid action');
+        }
         if (is_null($offset)) {
             $this->chain[] = $value;
-        } else {
+        }
+        else {
             $this->chain[$offset] = $value;
         }
     }
@@ -33,24 +41,12 @@ class Chain extends AAction implements ArrayAccess
         unset($this->chain[$offset]);
     }
 
-    public function serialize()
-    {
-        if (!count($this->chain)) {
-            return serialize([]);
-        }
-        return serialize($this->chain);
-    }
-
-    public function unserialize($options)
-    {
-        $this->chain = unserialize($options);
-    }
-
-    public function run(Image $image)
+    public function run(Image $image): Image
     {
         if (!count($this->chain)) {
             return $image;
         }
+
         foreach ($this->chain as $action) {
             $image = $action->run($image);
         }

@@ -1,10 +1,4 @@
-<?php
-/**
- * ImagoOpus
- *
- * @package ImagoOpus
- * @author  Andreas Sundqvist <andreas@forme.se>
- */
+<?php declare(strict_type=1);
 
 namespace ImagoOpus;
 
@@ -23,83 +17,84 @@ use ImagickPixel;
  * @method int getImageHeight()
  * @method array getImageGeometry()
  * @method bool thumbnailImage(int $columns, int $rows, bool $bestfit = false, bool $fill = false)
- * @method bool cropImage(int $width ,int $height, int $x, int $y)
+ * @method bool cropImage(int $width, int $height, int $x, int $y)
  * @method bool scaleImage(int $cols, int $rows, bool $bestfit = false)
  * @method string getImageFormat()
  * @method bool flipImage()
  * @method bool rotateImage(mixed $background, float $degrees)
  * @method bool compositeImage(Imagick $composite_object, int $composite, int $x, int $y, int $channel = Imagick::CHANNEL_ALL)
- * @method bool cropThumbnailImage( int $width, int $height)
+ * @method bool cropThumbnailImage(int $width, int $height)
  * @method int getImageOrientation()
  * @method bool setImageOrientation(int $orientation)
  * @method bool roundCorners(float $x_rounding, float $y_rounding, float $stroke_width = 10, float $displace = 5, float $size_correction = -6)
  * @method bool trimImage(float $fuzz)
+ * @method blurImage(float|int $radius, int $int)
+ * @method modulateImage(float|int $brightness, float|int $saturation, float|int $hue)
+ * @method charcoalImage(float $radius, int $int)
+ * @method brightnessContrastImage(int $int, float $contrast)
+ * @method sigmoidalContrastImage(bool $param, float|int $abs, float $param1)
+ * @method colorizeImage(string $string, ImagickPixel $opacityColor)
+ * @method gammaImage(float $param)
+ * @method contrastImage(int $int)
+ * @method negateImage(bool $grey, int $channel = Imagick::CHANNEL_DEFAULT)
+ * @method oilPaintImage(float $radius)
+ * @method sepiaToneImage(float $threshold)
+ * @method sharpenimage(float $radius, float $sigma, int $channel = Imagick::CHANNEL_DEFAULT)
+ * @method vignetteImage(float $blackPoint, float $whitePoint, int $x, int $y)
  */
 class Image
 {
-    protected static $channels = [
-        'red' => Imagick::CHANNEL_RED,
-        'green' => Imagick::CHANNEL_GREEN,
-        'blue' => Imagick::CHANNEL_BLUE,
-    ];
-    protected static $composites = [
-        'overlay' => Imagick::COMPOSITE_OVERLAY,
-        'multiply' => Imagick::COMPOSITE_MULTIPLY
-    ];
+    protected Imagick $imagick;
 
-    protected $imagick;
-    protected $source;
-
-    public function __construct($src)
+    public function __construct(Imagick $imagick)
     {
-        $this->source = $src;
-        $this->imagick = new Imagick($src);
+        $this->imagick = $imagick;
     }
 
-    public function writeImages($path, $ani = -1)
+    public function writeImages(string $path, bool $animated = null): bool
     {
-        if (!in_array($ani, [true, false])) {
-            $ani = false;
-            if ($this->isAnimated()) {
-                $ani = true;
-            }
-        }
-        if ($ani) {
+        $animated = $animated ?? $this->isAnimated();
+        if ($animated) {
             $this->imagick->optimizeImageLayers();
         }
-        return $this->imagick->writeImages($path, $ani);
+        return $this->imagick->writeImages($path, $animated);
     }
 
-    public function getSource()
+    public function getImagesBlob(): string
     {
-        return $this->source;
+        if ($this->isAnimated()) {
+            $this->imagick->optimizeImageLayers();
+        }
+
+        return $this->imagick->getImagesBlob();
     }
 
-    public function getImagick()
+    public function getImagick(): Imagick
     {
         return $this->imagick;
     }
 
-    public function setImagick(\Imagick $im)
+    public function setImagick(\Imagick $im): void
     {
         $this->imagick = $im;
     }
 
-    public function hasAlpha()
+    public function hasAlpha(): bool
     {
         $format = $this->imagick->getImageFormat();
         return in_array($format, ['PNG', 'GIF']);
     }
 
-    public function isAnimated()
+    public function isAnimated(): bool
     {
         $format = $this->imagick->getImageFormat();
         if ($format == 'GIF') {
             return true;
         }
+        return false;
     }
 
-    public function getHexColor(\ImagickPixel $pixel)
+    public function getHexColor(\ImagickPixel $pixel): string
     {
         $color = $pixel->getColor();
 
@@ -111,68 +106,50 @@ class Image
         );
     }
 
-    public function getImageHistogram($count = 0)
+    /**
+     * @param int $count
+     * @return ImagickPixel[]
+     */
+    public function getImageHistogram(int $count = 0): array
     {
         if (!$count) {
             return $this->imagick->getImageHistogram();
         }
-        $source = escapeshellarg($this->getSource());
-        if (strpos($source, '://')) {
-            exec('curl -s ' . $source . ' | convert fd:0 -colors '.(int)$count.' -format "%c" histogram:info:-', $output);
-        } else {
-            exec('convert ' . $source . ' -colors '.(int)$count.' -format "%c" histogram:info:', $output);
-        }
 
-        $sort = [];
-        $data = [];
-
-        foreach ($output as $i => $row) {
-            $reg = '/(\d+):\s*\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)\s*(\#[a-f0-9]{6})\s*s?rgb\(\d{1,3},\d{1,3},\d{1,3}\)/i';
-            $rs = preg_match($reg, $row, $m);
-            if ($rs) {
-                $sort[$i] = (int)$m[1];
-                $data[$i] = new \ImagickPixel($m[5]);
-                $data[$i]->count = (int)$m[1];
-            }
-        }
-        arsort($sort);
-        $keys = array_flip($sort);
-        $return = [];
-        foreach ($keys as $key) {
-            $return[] = $data[$key];
-        }
-
-        return $return;
+        throw new \RuntimeException('Not implemented');
     }
 
-    public function getQuantum()
+    public function getQuantum(): int
     {
         $quantum = $this->imagick->getQuantumRange();
         return $quantum['quantumRangeLong'];
     }
 
-    public function getRatio()
+    public function getRatio(): float
     {
         $dim = $this->imagick->getImageGeometry();
         return $dim['width'] / $dim['height'];
     }
 
-    public function preform(Actions\AAction $action)
+    public function preform(Actions\ActionInterface $action): Image
     {
         return $action->run($this);
     }
 
-    public function __call($method, $args)
+    /**
+     * @param array<int, mixed> $args
+     * @return false|mixed
+     */
+    public function __call(string $method, array $args)
     {
         if (method_exists($this->imagick, $method)) {
-            return call_user_func_array([$this->imagick, $method], $args);
+            return $this->imagick->$method(...$args);
         }
         throw new BadMethodCallException("No method by that name");
     }
 
-    public function compositeColor($color, $mode = 'normal')
+    public function compositeColor(string $color, int $mode = Imagick::COMPOSITE_DEFAULT): Image
     {
-        $mode = self::$composites[$mode];
         $layer = new Imagick();
         $layer->newImage($this->imagick->getImageWidth(), $this->imagick->getImageHeight(), new ImagickPixel($color));
         $layer->setImageFormat('jpg');
@@ -180,20 +157,20 @@ class Image
         return $this;
     }
 
-    public function baseCurve($channel, $value, $output = false)
+    public function baseCurve(int $channel, int $value, bool $output = false): Image
     {
         $expression = 'u+';
-        $channel = self::$channels[$channel];
         if ($output == true) {
-            $expression .= '(' . (string) $value . '/255)';
-        } else {
-            $expression .= '(u*' . (string) $value . '/255)';
+            $expression .= '(' . (string)$value . '/255)';
+        }
+        else {
+            $expression .= '(u*' . (string)$value . '/255)';
         }
         $this->imagick = $this->imagick->fxImage($expression, $channel);
         return $this;
     }
 
-    public function levels($black, $gamma, $white)
+    public function levels(float $black, float $gamma, float $white): Image
     {
         $quantumRangeLong = $this->getQuantum();
         $this->imagick->levelImage(
@@ -205,43 +182,40 @@ class Image
         return $this;
     }
 
-    public function colortone($color, $level, $type = 0)
+    /**
+     * @param ImagickPixel|string $color
+     */
+    public function colortone($color, int $level, bool $negate = true): Image
     {
         $this->imagick->setImageColorspace(Imagick::COLORSPACE_RGB);
         $args = [$level, 100 - $level];
-        $negate = $type == 0 ? true : false;
 
         $opacityColor = new ImagickPixel("rgba(0, 0, 0, 100)");
-        $layer_1 = clone $this->imagick;
-        $layer_1->colorizeImage($color, $opacityColor);
+        $layer1 = clone $this->imagick;
+        $layer1->colorizeImage($color, $opacityColor);
 
-        $layer_2 = clone $this->imagick;
-        $layer_2->setImageColorspace(Imagick::COLORSPACE_GRAY);
+        $layer2 = clone $this->imagick;
+        $layer2->setImageColorspace(Imagick::COLORSPACE_GRAY);
         if ($negate) {
-            $layer_2->negateImage(0);
+            $layer2->negateImage(false);
         }
 
         $this->imagick->setOption('compose:args', $args[0] . ',' . $args[1]);
 
-        $this->imagick->compositeImage($layer_1, Imagick::COMPOSITE_BLEND, 0, 0);
-        $this->imagick->compositeImage($layer_2, Imagick::COMPOSITE_BLEND, 0, 0);
+        $this->imagick->compositeImage($layer1, Imagick::COMPOSITE_BLEND, 0, 0);
+        $this->imagick->compositeImage($layer2, Imagick::COMPOSITE_BLEND, 0, 0);
+
+        return $this;
     }
 
-    /**
-     * @param string $color1
-     * @param string $color2
-     * @param float $cropFactor
-     * @return self
-     * @throws \ImagickException
-     */
-    public function customVignette($color1 = 'none', $color2 = 'black', $cropFactor = 1.5)
+    public function customVignette(string $color1 = 'none', string $color2 = 'black', float $cropFactor = 1.5): Image
     {
         $dim = $this->imagick->getImageGeometry();
-        $crop_x = floor($dim['width'] * $cropFactor);
-        $crop_y = floor($dim['height'] * $cropFactor);
-        
+        $cropX = floor($dim['width'] * $cropFactor);
+        $cropY = floor($dim['height'] * $cropFactor);
+
         $layer = new Imagick();
-        $layer->newPseudoImage($crop_x, $crop_y, 'radial-gradient:' . $color1 . '-' . $color2);
+        $layer->newPseudoImage((int)$cropX, (int)$cropY, 'radial-gradient:' . $color1 . '-' . $color2);
 
         $layer->cropThumbnailImage($dim['width'], $dim['height']);
         $layer->setImagePage($dim['width'], $dim['height'], 0, 0);
