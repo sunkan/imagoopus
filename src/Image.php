@@ -71,7 +71,7 @@ class Image
         $imagick->newImage(500, 150, new ImagickPixel('none'));
 
         // Set font properties
-        $draw->setFont('Helvetica');
+        $draw->setFont(dirname(__DIR__) . '/fonts/OpenSans-Regular.ttf');
         $draw->setFontSize($text->getSize());
         $draw->setFillColor($text->getColor());
         $draw->setFillOpacity($text->getOpacity());
