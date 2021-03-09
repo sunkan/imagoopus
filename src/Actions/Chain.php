@@ -13,6 +13,11 @@ class Chain implements ArrayAccess, ActionInterface
     /** @var ActionInterface[] */
     protected array $chain = [];
 
+    public function __construct(ActionInterface ...$actions)
+    {
+        $this->chain = $actions;
+    }
+
     public function offsetExists($offset): bool
     {
         return isset($this->chain[$offset]);

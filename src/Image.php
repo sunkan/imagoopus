@@ -5,6 +5,7 @@ namespace ImagoOpus;
 use BadMethodCallException;
 use Imagick;
 use ImagickPixel;
+use ImagoOpus\Values\Text;
 
 /**
  * Class Image
@@ -61,6 +62,27 @@ class Image
         return new self(new Imagick($path));
     }
 
+    public static function createWithText(Text $text): self
+    {
+        $imagick = new Imagick();
+
+        // Create a new drawing palette
+        $draw = new \ImagickDraw();
+        $imagick->newImage(500, 150, new ImagickPixel('none'));
+
+        // Set font properties
+        $draw->setFont('Helvetica');
+        $draw->setFontSize($text->getSize());
+        $draw->setFillColor($text->getColor());
+        $draw->setFillOpacity($text->getOpacity());
+        $draw->setGravity($text->getGravity()->toImagick());
+
+        // Draw text on image
+        $imagick->annotateImage($draw, 10, 10, 0, $text->getText());
+
+        return new self($imagick);
+    }
+
     public function __construct(Imagick $imagick)
     {
         $this->imagick = $imagick;
@@ -102,9 +124,13 @@ class Image
 
     public function isAnimated(): bool
     {
-        $format = $this->imagick->getImageFormat();
-        if ($format == 'GIF') {
-            return true;
+        try {
+            $format = $this->imagick->getImageFormat();
+            if ($format == 'GIF') {
+                return true;
+            }
+        }
+        catch (\ImagickException $e) {
         }
         return false;
     }
