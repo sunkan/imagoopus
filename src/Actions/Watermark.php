@@ -30,7 +30,6 @@ final class Watermark implements ActionInterface
         $watermarkHeight = $this->watermark->getImageHeight();
 
         [$x, $y] = $this->gravity->getGravityCords($image, $this->watermark);
-        var_dump($x, $y);
 
         $image->setIteratorIndex(0);
         do {
